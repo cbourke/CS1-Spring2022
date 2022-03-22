@@ -30,18 +30,7 @@ public class GameDataLoader {
 		
 		Map<Integer, Platform> result = new HashMap<>();
 		
-		// 1. make your connection
-		String url = "jdbc:mysql://cse.unl.edu/cbourke?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-		String user = "cbourke";
-		String pass = "1234";
-
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(url, user, pass);
-		} catch (SQLException e) {
-			System.err.println("could not get connection");
-			throw new RuntimeException(e);
-		}
+		Connection conn = ConnectionPool.getConnection();
 
 		// 2. prepare your query
 		String query = "select platformId, name from platform";
@@ -71,7 +60,7 @@ public class GameDataLoader {
 				rs.close();
 			}
 			ps.close();
-			conn.close();
+			ConnectionPool.putConnection(conn);
 		} catch (SQLException e) {
 			System.err.println("could not close connection");
 			throw new RuntimeException(e);

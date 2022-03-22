@@ -40,7 +40,7 @@ public class Film {
 	
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append(String.format("%s (%d) directed by %s", this.title, this.filmId, this.getDirector()));
+		result.append(String.format("%s (%d) directed by %s\n", this.title, this.filmId, this.getDirector()));
 		result.append("Starring: \n");
 		for(Actor a : this.cast) {
 			result.append("\t"+a+"\n");

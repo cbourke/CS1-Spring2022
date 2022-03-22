@@ -8,6 +8,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+
+import unl.cse.honors.jdbc.GameDataSaver;
+
 /**
  * Data loader class that loads data from an SQL database
  * 
@@ -15,6 +23,15 @@ import java.util.List;
  *
  */
 public class DataLoader {
+	
+	public static final Logger LOG = LogManager.getLogger(DataLoader.class);
+	
+	static {
+		//configure the logger:
+		Configurator.initialize(new DefaultConfiguration());
+	    Configurator.setRootLevel(Level.INFO);
+	}
+
 
 	/**
 	 * Connects to the database and loads data associated with the given
@@ -25,18 +42,20 @@ public class DataLoader {
 	 */
 	public static Director getDirectorById(int directorId) {
 
+		LOG.debug("Loading director with id " + directorId + "...");
+
 		Director d = null;
 
 		String url = "jdbc:mysql://cse.unl.edu/cbourke?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 		String user = "cbourke";
-		String pass = "1234";
+		String pass = "12fdsafdsa34";
 
 		// 1. make the connection...
 		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(url, user, pass);
 		} catch (SQLException e) {
-			System.err.println("cannot get connection");
+			LOG.error("cannot get connection using password " + pass, e);
 			throw new RuntimeException(e);
 		}
 
@@ -60,7 +79,7 @@ public class DataLoader {
 			}
 
 		} catch (SQLException e) {
-			System.err.println("cannot get data");
+			LOG.error("cannot get data", e);
 			throw new RuntimeException(e);
 		}
 
@@ -70,13 +89,20 @@ public class DataLoader {
 			ps.close();
 			conn.close();
 		} catch (SQLException e) {
-			System.err.println("cannot close for some reason...");
+			LOG.error("cannot close for some reason...", e);
 			throw new RuntimeException(e);
 		}
+		LOG.info("Success with directorId =  " + directorId + "...");
 
 		return d;
 	}
 
+	/**
+	 * Retrieves a director from the database based on their first name/last name.
+	 * If no such director exists in the database returns <code>null</code>
+	 * @param d
+	 * @return
+	 */
 	public static Director getDirectorByName(Director d) {
 
 		// 1. Make a connection...
@@ -120,13 +146,11 @@ public class DataLoader {
 		try {
 			rs.close();
 			ps.close();
+			conn.close();
 		} catch (SQLException e) {
 			System.err.println("cannot close for some reason...");
 			throw new RuntimeException(e);
 		}
-
-		//load all actors for each film...
-		query = "select * from Actor where actorId = ???"
 		
 
 		return result;
@@ -167,6 +191,35 @@ public class DataLoader {
 				Film f = new Film(filmId, title, d);
 				films.add(f);
 			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			System.err.println("cannot get data");
+			throw new RuntimeException(e);
+		}
+		
+		try {
+			//TODO: load all actors...
+			String filmActorQuery = "select "
+					+ "a.actorId as actorId, "
+					+ "a.firstName as firstName, "
+					+ "a.lastName as lastName "
+					+ "from Actor a "
+					+ "  join FilmActor fa on a.actorId = fa.actorId"
+					+ "  where fa.filmId = ?";
+			ps = conn.prepareStatement(filmActorQuery);
+			for(Film f : films) {
+				ps.setInt(1, f.getFilmId());
+				// 2b. execute your query:
+				rs = ps.executeQuery();
+				while(rs.next()) {
+					int actorId = rs.getInt("actorId");
+					String firstName = rs.getString("firstName");
+					String lastName = rs.getString("lastName");
+					Actor a = new Actor(actorId, firstName, lastName);
+					f.addActor(a);
+				}
+			}
 		} catch (SQLException e) {
 			System.err.println("cannot get data");
 			throw new RuntimeException(e);
@@ -186,6 +239,8 @@ public class DataLoader {
 	}
 
 	public static void main(String args[]) {
+		
+		LOG.info("Starting the main method...");
 
 		Director d = getDirectorById(1);
 		System.out.println(d);
