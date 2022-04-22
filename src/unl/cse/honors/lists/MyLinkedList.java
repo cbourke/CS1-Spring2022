@@ -1,6 +1,8 @@
 package unl.cse.honors.lists;
 
-public class MyLinkedList<T> {
+import java.util.Iterator;
+
+public class MyLinkedList<T> implements Iterable<T> {
 
 	private Node<T> head;
 	private int size;
@@ -8,6 +10,18 @@ public class MyLinkedList<T> {
 	public MyLinkedList() {
 		this.head = null;
 		this.size = 0;
+	}
+	
+	public boolean contains(T x) {
+
+		Node<T> curr = this.head;
+		while(curr != null) {
+			if(curr.getElement().equals(x)) {
+				return true;
+			}
+			curr = curr.getNext();
+		}
+		return false;
 	}
 	
 	public void addElementToHead(T element) {
@@ -33,12 +47,24 @@ public class MyLinkedList<T> {
 //		this.size++;
 	}
 	
+	public T removeFromHead() {
+		T x = this.head.getElement();
+		this.head = this.head.getNext();
+		this.size--;
+		return x;
+	}
+	
 	public T removeElementAtIndex(int index) {
-		//TODO: implement
+		
+		if(index == 0) {
+			return this.removeFromHead();
+		}
+
 		Node<T> previous = this.getNodeAtIndex(index - 1);
 		Node<T> current = previous.getNext();
 		Node<T> next = current.getNext();
 		previous.setNext(next);
+		this.size--;
 		return current.getElement();
 	}
 	
@@ -110,6 +136,28 @@ public class MyLinkedList<T> {
 		sb.append(current.getElement());		
 		return sb.toString();
 		
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new Iterator<T>() {
+
+			Node<T> current = head;
+			
+			@Override
+			public boolean hasNext() {
+				return (this.current != null);
+			}
+
+			@Override
+			public T next() {
+				T x = this.current.getElement();
+				this.current = this.current.getNext();
+				return x;
+				
+			}
+			
+		};
 	}
 	
 }

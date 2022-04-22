@@ -20,7 +20,7 @@ public class GameDataSaver {
 	static {
 		//configure the logger:
 		Configurator.initialize(new DefaultConfiguration());
-	    Configurator.setRootLevel(Level.INFO);
+		Configurator.setRootLevel(Level.INFO);
 	}
 
 

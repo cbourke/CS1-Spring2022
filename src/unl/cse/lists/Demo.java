@@ -1,5 +1,8 @@
 package unl.cse.lists;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Demo {
@@ -7,15 +10,18 @@ public class Demo {
 	public static void main(String args[]) {
 		
 		Random r = new Random();
-		MyLinkedList<Integer> list = new MyLinkedList<>();
-		//simulate adding elements as long as the size is less than 1 million
-//		for(int i=0; i<1000000; i++) {
-//			list.addElementToHead(r.nextInt());
-//		}
-		while(list.getSize() < 1000000) {
-			list.addElementToHead(r.nextInt());
+
+		Deque<Integer> queue = new ArrayDeque<>();
+		long n = 100000;
+		for(int i=0; i<n; i++) {
+			queue.offer(i);
 		}
-		
+		System.out.println("done A");
+		for(int i=0; i<n; i++) {
+			queue.poll();
+		}
 		System.out.println("done");
+
+
 	}
 }

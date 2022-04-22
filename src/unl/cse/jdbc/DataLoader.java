@@ -14,8 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 
-import unl.cse.honors.jdbc.GameDataSaver;
-
 /**
  * Data loader class that loads data from an SQL database
  * 
@@ -29,7 +27,8 @@ public class DataLoader {
 	static {
 		//configure the logger:
 		Configurator.initialize(new DefaultConfiguration());
-	    Configurator.setRootLevel(Level.INFO);
+		Configurator.setRootLevel(Level.INFO);
+	    //Configurator.setRootLevel(Level.INFO);
 	}
 
 
