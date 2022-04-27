@@ -62,7 +62,20 @@ public class TreeNode<T> {
 	public boolean isLeaf() {
 		return !this.hasLeftChild() && !this.hasRightChild();
 	}
-
 	
+	public int numChildren() {
+		int count = 0;
+		if(this.hasLeftChild()) { count++; }
+		if(this.hasRightChild()) { count++; }
+		return count;
+	}
+
+	public boolean isLeftChild() {
+		return (this.parent != null && this.parent.getLeftChild() == this);
+	}
+	
+	public boolean isRightChild() {
+		return (this.parent != null && this.parent.getRightChild() == this);		
+	}
 
 }
